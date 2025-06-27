@@ -115,7 +115,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-green-700 via-green-500 to-green-800 py-10 px-2">
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 drop-shadow-lg text-center">Team Picker Payment Tracker</h1>
+      <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 drop-shadow-lg text-center">Team Picker & Payment Tracker</h1>
       <div className="flex flex-col md:flex-row gap-8 mb-8 w-full max-w-4xl justify-center">
         {/* Player Names */}
         <div className="flex flex-col items-center flex-1">
