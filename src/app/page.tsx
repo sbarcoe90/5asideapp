@@ -117,8 +117,9 @@ export default function Home() {
             {payments.length === 0 && (
               <span className="text-gray-400 text-center mt-24">No players yet</span>
             )}
-            {payments.map((name) => (
+            {payments.map((name, idx) => (
               <label key={name} className="flex items-center gap-2 text-lg cursor-pointer select-none">
+                <span className="w-6 text-right text-gray-500 font-mono">{idx + 1}.</span>
                 <input
                   type="checkbox"
                   checked={!!paid[name]}
