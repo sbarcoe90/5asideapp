@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useLayoutEffect } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 
 export default function Home() {
   const [names, setNames] = useState("");
@@ -18,6 +18,31 @@ export default function Home() {
       setTextareaHeight(`${shadowRef.current.scrollHeight}px`);
     }
   }, [names]);
+
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedNames = localStorage.getItem("fiveaside_names");
+    const savedPaid = localStorage.getItem("fiveaside_paid");
+    if (savedNames) {
+      setNames(savedNames);
+      const playerList = savedNames
+        .split("\n")
+        .map((n) => n.trim())
+        .filter((n) => n.length > 0);
+      setPayments(playerList);
+      if (savedPaid) {
+        try {
+          setPaid(JSON.parse(savedPaid));
+        } catch {}
+      }
+    }
+  }, []);
+
+  // Save to localStorage when names or paid changes
+  useEffect(() => {
+    localStorage.setItem("fiveaside_names", names);
+    localStorage.setItem("fiveaside_paid", JSON.stringify(paid));
+  }, [names, paid]);
 
   // Update names and payments list
   const handleNamesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -72,6 +97,17 @@ export default function Home() {
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Start Over handler
+  const handleStartOver = () => {
+    setNames("");
+    setPayments([]);
+    setPaid({});
+    setTeams(null);
+    setCopied(false);
+    localStorage.removeItem("fiveaside_names");
+    localStorage.removeItem("fiveaside_paid");
   };
 
   // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
@@ -132,11 +168,18 @@ export default function Home() {
       </div>
       {/* Generate Teams Button */}
       <button
-        className="bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition mb-8 text-xl"
+        className="bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition mb-4 text-xl"
         onClick={handleGenerateTeams}
         disabled={payments.length < 2}
       >
         Generate Teams
+      </button>
+      {/* Start Over Button */}
+      <button
+        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-red-900 transition mb-8 text-lg"
+        onClick={handleStartOver}
+      >
+        Start Over
       </button>
       {/* Teams Display */}
       {teams && (
