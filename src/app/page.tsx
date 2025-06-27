@@ -220,7 +220,7 @@ export default function Home() {
             className={`mt-2 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition text-lg ${copied ? "opacity-70" : ""}`}
             onClick={handleCopy}
           >
-            {copied ? "Copied!" : "Copy"}
+            {copied ? "Copied!" : "Copy for WhatsApp"}
           </button>
         </div>
       )}
