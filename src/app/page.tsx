@@ -75,7 +75,6 @@ export default function Home() {
   };
 
   // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
-  const rowCount = Math.max(10, names.split("\n").length);
   const rowHeight = 32; // px, approx for text-lg + padding
 
   return (
@@ -111,7 +110,7 @@ export default function Home() {
           <label className="text-xl font-semibold text-white mb-2">Payments</label>
           <div
             className="w-64 rounded-xl bg-white/80 p-4 shadow-lg flex flex-col gap-2 transition-all duration-200"
-            style={{ height: `${(payments.length + 2) * rowHeight}px`, minHeight: `${rowHeight * 10}px` }}
+            style={{ height: `${(payments.length + 2) * rowHeight}px`, minHeight: `${32 * 10}px` }}
           >
             {payments.length === 0 && (
               <span className="text-gray-400 text-center mt-24">No players yet</span>
