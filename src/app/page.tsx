@@ -1,102 +1,175 @@
-import Image from "next/image";
+"use client";
+import React, { useState, useRef, useLayoutEffect } from "react";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [names, setNames] = useState("");
+  const [payments, setPayments] = useState<string[]>([]);
+  const [paid, setPaid] = useState<{ [name: string]: boolean }>({});
+  const [teams, setTeams] = useState<{ bib: string[]; nobib: string[] } | null>(null);
+  const [copied, setCopied] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const shadowRef = useRef<HTMLTextAreaElement>(null);
+  const [textareaHeight, setTextareaHeight] = useState("auto");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  // Auto-resize textarea
+  useLayoutEffect(() => {
+    if (shadowRef.current && textareaRef.current) {
+      shadowRef.current.value = names || " ";
+      setTextareaHeight(`${shadowRef.current.scrollHeight}px`);
+    }
+  }, [names]);
+
+  // Update names and payments list
+  const handleNamesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setNames(e.target.value);
+    const playerList = e.target.value
+      .split("\n")
+      .map((n) => n.trim())
+      .filter((n) => n.length > 0);
+    setPayments(playerList);
+    // Remove paid status for names that are no longer present
+    setPaid((prev) => {
+      const updated: { [name: string]: boolean } = {};
+      playerList.forEach((name) => {
+        updated[name] = prev[name] || false;
+      });
+      return updated;
+    });
+  };
+
+  // Toggle payment status
+  const handlePaidToggle = (name: string) => {
+    setPaid((prev) => ({ ...prev, [name]: !prev[name] }));
+  };
+
+  // Generate teams
+  const handleGenerateTeams = () => {
+    const shuffled = [...payments].sort(() => Math.random() - 0.5);
+    const mid = Math.ceil(shuffled.length / 2);
+    setTeams({
+      bib: shuffled.slice(0, mid),
+      nobib: shuffled.slice(mid),
+    });
+    setCopied(false);
+  };
+
+  // Copy teams to clipboard (with fallback)
+  const handleCopy = async () => {
+    if (!teams) return;
+    const bib = teams.bib.join("\n");
+    const nobib = teams.nobib.join("\n");
+    const text = `*Bib*\n${bib}\n\n*No Bib*\n${nobib}`;
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // fallback for older browsers
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
+  const rowCount = Math.max(10, names.split("\n").length);
+  const rowHeight = 32; // px, approx for text-lg + padding
+  const paymentsBoxHeight = rowCount * rowHeight;
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-green-700 via-green-500 to-green-800 py-10 px-2">
+      <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 drop-shadow-lg text-center">Team Picker Payment Tracker</h1>
+      <div className="flex flex-col md:flex-row gap-8 mb-8 w-full max-w-4xl justify-center">
+        {/* Player Names */}
+        <div className="flex flex-col items-center flex-1">
+          <label className="text-xl font-semibold text-white mb-2">Enter Player Names</label>
+          <div className="relative w-64">
+            <textarea
+              ref={textareaRef}
+              className="w-full rounded-xl bg-white/80 p-4 text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-black placeholder:text-gray-500"
+              placeholder="Type one name per line..."
+              value={names}
+              onChange={handleNamesChange}
+              style={{ height: textareaHeight, minHeight: `${rowHeight * 10}px`, maxHeight: "500px" }}
+              rows={10}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {/* Shadow textarea for auto-sizing (hidden) */}
+            <textarea
+              ref={shadowRef}
+              className="absolute top-0 left-0 w-full p-4 text-lg opacity-0 pointer-events-none h-0 resize-none text-black"
+              tabIndex={-1}
+              aria-hidden
+              readOnly
+              rows={1}
+            />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        {/* Payments */}
+        <div className="flex flex-col items-center flex-1">
+          <label className="text-xl font-semibold text-white mb-2">Payments</label>
+          <div
+            className="w-64 rounded-xl bg-white/80 p-4 shadow-lg flex flex-col gap-2 transition-all duration-200"
+            style={{ height: `${(payments.length + 2) * rowHeight}px`, minHeight: `${rowHeight * 10}px` }}
+          >
+            {payments.length === 0 && (
+              <span className="text-gray-400 text-center mt-24">No players yet</span>
+            )}
+            {payments.map((name) => (
+              <label key={name} className="flex items-center gap-2 text-lg cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={!!paid[name]}
+                  onChange={() => handlePaidToggle(name)}
+                  className="accent-green-600 w-5 h-5"
+                />
+                <span className={paid[name] ? "line-through text-gray-500" : "text-green-900 font-medium"}>{name}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+      </div>
+      {/* Generate Teams Button */}
+      <button
+        className="bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition mb-8 text-xl"
+        onClick={handleGenerateTeams}
+        disabled={payments.length < 2}
+      >
+        Generate Teams
+      </button>
+      {/* Teams Display */}
+      {teams && (
+        <div className="w-full max-w-xl flex flex-col items-center gap-4 mb-4">
+          <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
+            <div className="flex-1 bg-white/90 rounded-xl p-4 shadow-lg border-2 border-green-700">
+              <h2 className="text-xl font-bold text-green-800 mb-2 text-center">Bib</h2>
+              <ul className="text-lg text-green-900 font-medium list-disc list-inside">
+                {teams.bib.map((name) => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="flex-1 bg-white/90 rounded-xl p-4 shadow-lg border-2 border-green-900">
+              <h2 className="text-xl font-bold text-green-800 mb-2 text-center">No Bib</h2>
+              <ul className="text-lg text-green-900 font-medium list-disc list-inside">
+                {teams.nobib.map((name) => (
+                  <li key={name}>{name}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <button
+            className={`mt-2 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition text-lg ${copied ? "opacity-70" : ""}`}
+            onClick={handleCopy}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+      )}
+      <footer className="mt-auto text-center text-white/80 text-sm pt-10">
+        <span>⚽ 5-a-side Team Picker & Payment Tracker</span>
       </footer>
     </div>
   );
