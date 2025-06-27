@@ -77,7 +77,6 @@ export default function Home() {
   // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
   const rowCount = Math.max(10, names.split("\n").length);
   const rowHeight = 32; // px, approx for text-lg + padding
-  const paymentsBoxHeight = rowCount * rowHeight;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-green-700 via-green-500 to-green-800 py-10 px-2">
