@@ -23,6 +23,7 @@ export default function Home() {
   useEffect(() => {
     const savedNames = localStorage.getItem("fiveaside_names");
     const savedPaid = localStorage.getItem("fiveaside_paid");
+    const savedTeams = localStorage.getItem("fiveaside_teams");
     if (savedNames) {
       setNames(savedNames);
       const playerList = savedNames
@@ -35,6 +36,11 @@ export default function Home() {
           setPaid(JSON.parse(savedPaid));
         } catch {}
       }
+      if (savedTeams) {
+        try {
+          setTeams(JSON.parse(savedTeams));
+        } catch {}
+      }
     }
   }, []);
 
@@ -43,6 +49,13 @@ export default function Home() {
     localStorage.setItem("fiveaside_names", names);
     localStorage.setItem("fiveaside_paid", JSON.stringify(paid));
   }, [names, paid]);
+
+  // Save teams to localStorage when teams change
+  useEffect(() => {
+    if (teams) {
+      localStorage.setItem("fiveaside_teams", JSON.stringify(teams));
+    }
+  }, [teams]);
 
   // Update names and payments list
   const handleNamesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -108,6 +121,7 @@ export default function Home() {
     setCopied(false);
     localStorage.removeItem("fiveaside_names");
     localStorage.removeItem("fiveaside_paid");
+    localStorage.removeItem("fiveaside_teams");
   };
 
   // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
