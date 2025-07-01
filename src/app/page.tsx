@@ -7,6 +7,7 @@ export default function Home() {
   const [paid, setPaid] = useState<{ [name: string]: boolean }>({});
   const [teams, setTeams] = useState<{ bib: string[]; nobib: string[] } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [teamNames, setTeamNames] = useState<{ bib: string; nobib: string }>({ bib: "Bib", nobib: "No Bib" });
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const shadowRef = useRef<HTMLTextAreaElement>(null);
   const [textareaHeight, setTextareaHeight] = useState("auto");
@@ -24,6 +25,7 @@ export default function Home() {
     const savedNames = localStorage.getItem("fiveaside_names");
     const savedPaid = localStorage.getItem("fiveaside_paid");
     const savedTeams = localStorage.getItem("fiveaside_teams");
+    const savedTeamNames = localStorage.getItem("fiveaside_teamnames");
     if (savedNames) {
       setNames(savedNames);
       const playerList = savedNames
@@ -42,6 +44,11 @@ export default function Home() {
         } catch {}
       }
     }
+    if (savedTeamNames) {
+      try {
+        setTeamNames(JSON.parse(savedTeamNames));
+      } catch {}
+    }
   }, []);
 
   // Save to localStorage when names or paid changes
@@ -56,6 +63,11 @@ export default function Home() {
       localStorage.setItem("fiveaside_teams", JSON.stringify(teams));
     }
   }, [teams]);
+
+  // Save team names to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem("fiveaside_teamnames", JSON.stringify(teamNames));
+  }, [teamNames]);
 
   // Update names and payments list
   const handleNamesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -96,7 +108,7 @@ export default function Home() {
     if (!teams) return;
     const bib = teams.bib.join("\n");
     const nobib = teams.nobib.join("\n");
-    const text = `*Bib*\n${bib}\n\n*No Bib*\n${nobib}`;
+    const text = `*${teamNames.bib}*\n${bib}\n\n*${teamNames.nobib}*\n${nobib}`;
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -119,13 +131,34 @@ export default function Home() {
     setPaid({});
     setTeams(null);
     setCopied(false);
+    setTeamNames({ bib: "Bib", nobib: "No Bib" });
     localStorage.removeItem("fiveaside_names");
     localStorage.removeItem("fiveaside_paid");
     localStorage.removeItem("fiveaside_teams");
+    localStorage.removeItem("fiveaside_teamnames");
+  };
+
+  // Handle team name change
+  const handleTeamNameChange = (key: "bib" | "nobib", value: string) => {
+    setTeamNames((prev) => ({ ...prev, [key]: value }));
   };
 
   // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
   const rowHeight = 32; // px, approx for text-lg + padding
+
+  // Swap player between teams
+  const handleSwapPlayer = (player: string, from: 'bib' | 'nobib') => {
+    if (!teams) return;
+    const fromTeam = [...teams[from]];
+    const toTeamKey = from === 'bib' ? 'nobib' : 'bib';
+    const toTeam = [...teams[toTeamKey], player];
+    const newFromTeam = fromTeam.filter((name) => name !== player);
+    setTeams({
+      ...teams,
+      [from]: newFromTeam,
+      [toTeamKey]: toTeam,
+    });
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-green-700 via-green-500 to-green-800 py-10 px-2">
@@ -200,18 +233,46 @@ export default function Home() {
         <div className="w-full max-w-xl flex flex-col items-center gap-4 mb-4">
           <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
             <div className="flex-1 bg-white/90 rounded-xl p-4 shadow-lg border-2 border-green-700">
-              <h2 className="text-xl font-bold text-green-800 mb-2 text-center">Bib</h2>
+              <input
+                className="text-xl font-bold text-green-800 mb-2 text-center w-full bg-transparent border-b-2 border-green-300 focus:outline-none focus:border-green-700 transition"
+                value={teamNames.bib}
+                onChange={e => handleTeamNameChange("bib", e.target.value)}
+                maxLength={32}
+              />
               <ul className="text-lg text-green-900 font-medium list-disc list-inside">
                 {teams.bib.map((name) => (
-                  <li key={name}>{name}</li>
+                  <li key={name} className="flex items-center justify-between gap-2">
+                    <span>{name}</span>
+                    <button
+                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-xs font-semibold border border-green-700"
+                      onClick={() => handleSwapPlayer(name, 'bib')}
+                      title="Move to other team"
+                    >
+                      ⇄
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
             <div className="flex-1 bg-white/90 rounded-xl p-4 shadow-lg border-2 border-green-900">
-              <h2 className="text-xl font-bold text-green-800 mb-2 text-center">No Bib</h2>
+              <input
+                className="text-xl font-bold text-green-800 mb-2 text-center w-full bg-transparent border-b-2 border-green-300 focus:outline-none focus:border-green-900 transition"
+                value={teamNames.nobib}
+                onChange={e => handleTeamNameChange("nobib", e.target.value)}
+                maxLength={32}
+              />
               <ul className="text-lg text-green-900 font-medium list-disc list-inside">
                 {teams.nobib.map((name) => (
-                  <li key={name}>{name}</li>
+                  <li key={name} className="flex items-center justify-between gap-2">
+                    <span>{name}</span>
+                    <button
+                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-xs font-semibold border border-green-900"
+                      onClick={() => handleSwapPlayer(name, 'nobib')}
+                      title="Move to other team"
+                    >
+                      ⇄
+                    </button>
+                  </li>
                 ))}
               </ul>
             </div>
