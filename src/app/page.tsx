@@ -2,7 +2,8 @@
 import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 
 export default function Home() {
-  const [showDemo, setShowDemo] = useState(false);
+  // Always show the main app, hide landing page
+  // const [showDemo, setShowDemo] = useState(false);
   const [names, setNames] = useState("");
   const [payments, setPayments] = useState<string[]>([]);
   const [paid, setPaid] = useState<{ [name: string]: boolean }>({});
@@ -243,10 +244,10 @@ export default function Home() {
               />
               <ul className="text-lg text-green-900 font-medium list-disc list-inside">
                 {teams.bib.map((name) => (
-                  <li key={name} className="flex items-center justify-between gap-2">
+                  <li key={name} className="flex items-center justify-between gap-2 mb-2">
                     <span>{name}</span>
                     <button
-                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-xs font-semibold border border-green-700"
+                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-lg font-bold border border-green-700"
                       onClick={() => handleSwapPlayer(name, 'bib')}
                       title="Move to other team"
                     >
@@ -265,10 +266,10 @@ export default function Home() {
               />
               <ul className="text-lg text-green-900 font-medium list-disc list-inside">
                 {teams.nobib.map((name) => (
-                  <li key={name} className="flex items-center justify-between gap-2">
+                  <li key={name} className="flex items-center justify-between gap-2 mb-2">
                     <span>{name}</span>
                     <button
-                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-xs font-semibold border border-green-900"
+                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-lg font-bold border border-green-900"
                       onClick={() => handleSwapPlayer(name, 'nobib')}
                       title="Move to other team"
                     >
@@ -293,37 +294,9 @@ export default function Home() {
     </div>
   );
 
-  // Landing page content
-  const landing = (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-700 via-green-500 to-green-800 py-10 px-2">
-      <div className="bg-white/90 rounded-2xl shadow-xl p-8 max-w-xl w-full flex flex-col items-center gap-6">
-        <h1 className="text-4xl font-extrabold text-green-900 mb-2 text-center drop-shadow">5-a-side Team Picker & Payment Tracker</h1>
-        <p className="text-green-900 text-lg text-center mb-2">
-          <span className="font-semibold"></span> I was bouncing between note apps on different devices trying to pick teams and then track missed payments from Revolut, WhatsApp, and more. It was a pain to keep track and share teams!
-        </p>
-        <div className="bg-green-100 rounded-xl p-4 w-full">
-          <h2 className="text-xl font-bold text-green-800 mb-2 text-center">How it works</h2>
-          <ol className="list-decimal list-inside text-green-900 text-base space-y-1">
-            <li>Paste or type your player names (one per line).</li>
-            <li>Press <span className="font-semibold">Generate Teams</span> to split into two random teams.</li>
-            <li>Rename teams if you want, or swap players between teams.</li>
-            <li>Copy the teams (with one click) to WhatsApp or anywhere else.</li>
-            <li>Finally, mark off who has paid with the pre populated list with checkboxes (dopamaine hits galore!).</li>
-            <li>Payments and teams are saved locally for your next session.</li>
-          </ol>
-        </div>
-        <button
-          className="bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold py-3 px-10 rounded-full shadow-lg border border-green-900 transition text-xl mt-4"
-          onClick={() => setShowDemo(true)}
-        >
-          Give it a shot!
-        </button>
-        <footer className="mt-8 text-center text-green-800/80 text-sm">
-          <span>Made for 5-a-side organisers everywhere ⚽</span>
-        </footer>
-      </div>
-    </div>
-  );
+  // Landing page content (hidden for now)
+  // const landing = ( ... );
 
-  return showDemo ? mainApp : landing;
+  // Always show mainApp
+  return mainApp;
 }
