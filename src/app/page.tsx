@@ -172,7 +172,7 @@ export default function Home() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
         return;
-      } catch (e) {
+      } catch {
         // User cancelled or not supported, fall through to WhatsApp
       }
     }
