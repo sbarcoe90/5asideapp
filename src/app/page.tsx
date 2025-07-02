@@ -13,6 +13,8 @@ export default function Home() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const shadowRef = useRef<HTMLTextAreaElement>(null);
   const [textareaHeight, setTextareaHeight] = useState("auto");
+  const [showPasteModal, setShowPasteModal] = useState(false);
+  const [whatsAppPaste, setWhatsAppPaste] = useState("");
 
   // Auto-resize textarea
   useLayoutEffect(() => {
@@ -71,10 +73,61 @@ export default function Home() {
     localStorage.setItem("fiveaside_teamnames", JSON.stringify(teamNames));
   }, [teamNames]);
 
-  // Update names and payments list
+  // WhatsApp parsing utility
+  function parseWhatsAppNames(text: string): string[] {
+    // WhatsApp format: [date, time] Name: message
+    // Support both desktop and mobile formats
+    const lines = text.split(/\r?\n/);
+    const names = lines
+      .map(line => {
+        // Match: [dd/mm] or [dd/mm/yyyy], time (12/24h), optional am/pm, Name:
+        const match = line.match(/\[\d{2}\/\d{2}(?:\/\d{4})?, \d{1,2}:\d{2}(?::\d{2})?\s?(?:am|pm)?\] ([^:]+):/i);
+        if (match) {
+          // Remove leading non-letters and trim
+          let name = match[1].trim().replace(/^[^A-Za-z]+/, "");
+          // Only first word (first name)
+          name = name.split(" ")[0];
+          // Only allow names that start with a letter
+          if (/^[A-Za-z]/.test(name)) {
+            return name;
+          }
+        }
+        return null;
+      })
+      .filter(Boolean) as string[];
+    // Remove duplicates and empty
+    return Array.from(new Set(names)).filter(Boolean);
+  }
+
+  // Handler for WhatsApp paste button (show modal/section)
+  const handlePasteFromWhatsApp = () => {
+    setShowPasteModal(true);
+    setWhatsAppPaste("");
+  };
+
+  // Handler for parsing WhatsApp data from modal/section
+  const handleParseWhatsApp = () => {
+    const namesArr = parseWhatsAppNames(whatsAppPaste);
+    setNames(namesArr.join("\n"));
+    setPayments(namesArr);
+    setPaid({});
+    setShowPasteModal(false);
+    setWhatsAppPaste("");
+  };
+
+  // Enhance manual paste: if WhatsApp format detected, auto-parse
   const handleNamesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNames(e.target.value);
-    const playerList = e.target.value
+    const value = e.target.value;
+    // Detect WhatsApp format
+    if (/^\[\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2}\]/m.test(value)) {
+      const namesArr = parseWhatsAppNames(value);
+      setNames(namesArr.join("\n"));
+      setPayments(namesArr);
+      setPaid({});
+      return;
+    }
+    setNames(value);
+    const playerList = value
       .split("\n")
       .map((n) => n.trim())
       .filter((n) => n.length > 0);
@@ -106,11 +159,29 @@ export default function Home() {
   };
 
   // Copy teams to clipboard (with fallback)
-  const handleCopy = async () => {
+  const handleCopyAndShare = async () => {
     if (!teams) return;
     const bib = teams.bib.join("\n");
     const nobib = teams.nobib.join("\n");
     const text = `*${teamNames.bib}*\n${bib}\n\n*${teamNames.nobib}*\n${nobib}`;
+
+    // Try Web Share API first
+    if (navigator.share) {
+      try {
+        await navigator.share({ text });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+        return;
+      } catch (e) {
+        // User cancelled or not supported, fall through to WhatsApp
+      }
+    }
+
+    // WhatsApp share link (mobile or desktop)
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(waUrl, "_blank");
+
+    // Also copy to clipboard as fallback
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -170,6 +241,43 @@ export default function Home() {
         {/* Player Names */}
         <div className="flex flex-col items-center flex-1">
           <label className="text-xl font-semibold text-white mb-2">Enter Player Names</label>
+          <button
+            className="mb-2 bg-green-700 hover:bg-green-800 text-white font-bold py-1 px-4 rounded-full shadow border border-green-900 transition text-base"
+            onClick={handlePasteFromWhatsApp}
+            type="button"
+          >
+            Paste from WhatsApp
+          </button>
+          {showPasteModal && (
+            <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+              <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md flex flex-col items-center gap-4">
+                <h2 className="text-lg font-bold text-green-900">Paste WhatsApp Data</h2>
+                <textarea
+                  className="w-full rounded bg-gray-100 p-3 text-base text-black border border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400"
+                  rows={8}
+                  placeholder="Paste your WhatsApp messages here..."
+                  value={whatsAppPaste}
+                  onChange={e => setWhatsAppPaste(e.target.value)}
+                />
+                <div className="flex gap-4 w-full justify-end">
+                  <button
+                    className="bg-gray-300 hover:bg-gray-400 text-green-900 font-bold py-2 px-4 rounded"
+                    onClick={() => setShowPasteModal(false)}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-4 rounded"
+                    onClick={handleParseWhatsApp}
+                    type="button"
+                  >
+                    Parse WhatsApp Data
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="relative w-64">
             <textarea
               ref={textareaRef}
@@ -282,7 +390,7 @@ export default function Home() {
           </div>
           <button
             className={`mt-2 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition text-lg ${copied ? "opacity-70" : ""}`}
-            onClick={handleCopy}
+            onClick={handleCopyAndShare}
           >
             {copied ? "Copied!" : "Copy for WhatsApp"}
           </button>
