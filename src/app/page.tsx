@@ -240,7 +240,30 @@ export default function Home() {
       <div className="flex flex-col md:flex-row gap-8 mb-8 w-full max-w-4xl justify-center">
         {/* Player Names */}
         <div className="flex flex-col items-center flex-1">
-          <label className="text-xl font-semibold text-white mb-2">Enter Player Names</label>
+          <label className="text-xl font-semibold text-white mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)]">Enter Player Names Below</label>
+          <div className="relative w-64">
+            <textarea
+              ref={textareaRef}
+              className="w-full rounded-xl bg-white/80 p-4 text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-black placeholder:text-gray-500"
+              placeholder="Type one name per line..."
+              value={names}
+              onChange={handleNamesChange}
+              style={{ height: textareaHeight, minHeight: `${rowHeight * 10}px`, maxHeight: "500px" }}
+              rows={10}
+            />
+            {/* Shadow textarea for auto-sizing (hidden) */}
+            <textarea
+              ref={shadowRef}
+              className="absolute top-0 left-0 w-full p-4 text-lg opacity-0 pointer-events-none h-0 resize-none text-black"
+              tabIndex={-1}
+              aria-hidden
+              readOnly
+              rows={1}
+            />
+          </div>
+          <div className="flex items-center w-full justify-center my-2">
+            <span className="text-white text-sm font-bold px-2 py-1 bg-green-800 rounded-full shadow">OR</span>
+          </div>
           <button
             className="mb-2 bg-green-700 hover:bg-green-800 text-white font-bold py-1 px-4 rounded-full shadow border border-green-900 transition text-base"
             onClick={handlePasteFromWhatsApp}
@@ -255,7 +278,7 @@ export default function Home() {
                 <textarea
                   className="w-full rounded bg-gray-100 p-3 text-base text-black border border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400"
                   rows={8}
-                  placeholder="Paste your WhatsApp messages here..."
+                  placeholder="Paste your WhatsApp messages here... (works on mobile and desktop)"
                   value={whatsAppPaste}
                   onChange={e => setWhatsAppPaste(e.target.value)}
                 />
@@ -278,30 +301,10 @@ export default function Home() {
               </div>
             </div>
           )}
-          <div className="relative w-64">
-            <textarea
-              ref={textareaRef}
-              className="w-full rounded-xl bg-white/80 p-4 text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-black placeholder:text-gray-500"
-              placeholder="Type one name per line..."
-              value={names}
-              onChange={handleNamesChange}
-              style={{ height: textareaHeight, minHeight: `${rowHeight * 10}px`, maxHeight: "500px" }}
-              rows={10}
-            />
-            {/* Shadow textarea for auto-sizing (hidden) */}
-            <textarea
-              ref={shadowRef}
-              className="absolute top-0 left-0 w-full p-4 text-lg opacity-0 pointer-events-none h-0 resize-none text-black"
-              tabIndex={-1}
-              aria-hidden
-              readOnly
-              rows={1}
-            />
-          </div>
         </div>
         {/* Payments */}
         <div className="flex flex-col items-center flex-1">
-          <label className="text-xl font-semibold text-white mb-2">Payments</label>
+          <label className="text-xl font-semibold text-white mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)]">Payments</label>
           <div
             className="w-64 rounded-xl bg-white/80 p-4 shadow-lg flex flex-col gap-2 transition-all duration-200"
             style={{ height: `${(payments.length + 2) * rowHeight}px`, minHeight: `${32 * 10}px` }}
@@ -392,7 +395,7 @@ export default function Home() {
             className={`mt-2 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition text-lg ${copied ? "opacity-70" : ""}`}
             onClick={handleCopyAndShare}
           >
-            {copied ? "Copied!" : "Copy for WhatsApp"}
+            {copied ? "Copied!" : "Share via WhatsApp"}
           </button>
         </div>
       )}
