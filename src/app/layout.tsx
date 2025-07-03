@@ -14,8 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "5 a side Picker & Tracker",
-  description: "Pick Teams, Track Payments, and More!",
+  title: "5-a-side Picker & Team Generator | Football Team Picker & Payment Tracker",
+  description: "The easiest 5-a-side team picker and payment tracker. Instantly generate random football teams, track payments, and share teams for WhatsApp. Perfect for casual games, futsal, and more!",
+  keywords: [
+    "5 a side picker",
+    "team picker",
+    "football team generator",
+    "random team picker",
+    "futsal team picker",
+    "soccer team picker",
+    "team randomizer",
+    "payment tracker",
+    "whatsapp team picker",
+    "casual football app"
+  ],
 };
 
 export default function RootLayout({
@@ -26,6 +38,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* SEO Meta Tags */}
+        <title>5-a-side Picker & Team Generator | Football Team Picker & Payment Tracker</title>
+        <meta name="description" content="The easiest 5-a-side team picker and payment tracker. Instantly generate random football teams, track payments, and share teams for WhatsApp. Perfect for casual games, futsal, and more!" />
+        <meta name="keywords" content="5 a side picker, team picker, football team generator, random team picker, futsal team picker, soccer team picker, team randomizer, payment tracker, whatsapp team picker, casual football app" />
         {/* Google Analytics */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-GKRZJEBZTM"
