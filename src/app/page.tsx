@@ -15,6 +15,7 @@ export default function Home() {
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const [showPasteModal, setShowPasteModal] = useState(false);
   const [whatsAppPaste, setWhatsAppPaste] = useState("");
+  const [showFeedback, setShowFeedback] = useState(false);
 
   // Auto-resize textarea
   useLayoutEffect(() => {
@@ -399,9 +400,52 @@ export default function Home() {
           </button>
         </div>
       )}
-      <footer className="mt-auto text-center text-white/80 text-sm pt-10">
+      <footer className="mt-auto text-center text-white/80 text-sm pt-10 flex flex-col items-center gap-2">
         <span>⚽ 5-a-side Team Picker & Payment Tracker</span>
+        <a
+          href="https://buymeacoffee.com/sbarcoe"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold py-2 px-4 rounded-full shadow border border-yellow-600 transition text-base mt-2"
+          style={{ textDecoration: 'none' }}
+        >
+          <span role="img" aria-label="coffee">☕</span> Buy Me a Coffee
+        </a>
       </footer>
+
+      {/* Floating Feedback Button */}
+      <button
+        className="fixed z-50 bottom-6 right-6 bg-green-700 hover:bg-green-800 text-white font-bold py-3 px-5 rounded-full shadow-lg border-2 border-green-900 transition text-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+        style={{ boxShadow: '0 4px 16px rgba(0,0,0,0.25)' }}
+        aria-label="Send Feedback"
+        onClick={() => setShowFeedback(true)}
+        type="button"
+      >
+        Feedback
+      </button>
+
+      {/* Feedback Modal */}
+      {showFeedback && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg flex flex-col items-center relative p-2 sm:p-4 mx-2">
+            <button
+              className="absolute top-2 right-2 text-green-900 hover:text-red-600 text-2xl font-bold focus:outline-none"
+              onClick={() => setShowFeedback(false)}
+              aria-label="Close Feedback Form"
+              type="button"
+            >
+              ×
+            </button>
+            <iframe
+              src="https://tally.so/r/w2YWAL"
+              title="Feedback Form"
+              className="w-full rounded-b-xl border-0"
+              style={{ minHeight: '340px', height: '70vh', maxHeight: '90vh' }}
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 
