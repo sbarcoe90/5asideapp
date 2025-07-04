@@ -16,6 +16,7 @@ export default function Home() {
   const [showPasteModal, setShowPasteModal] = useState(false);
   const [whatsAppPaste, setWhatsAppPaste] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   // Auto-resize textarea
   useLayoutEffect(() => {
@@ -237,30 +238,67 @@ export default function Home() {
   // Place the entire main app UI in a variable for clarity
   const mainApp = (
     <div className="min-h-screen flex flex-col items-center justify-start bg-gradient-to-b from-green-700 via-green-500 to-green-800 py-10 px-2">
-      <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 drop-shadow-lg text-center">Team Picker & Payment Tracker</h1>
+      <header className="w-full max-w-3xl mx-auto mt-4 mb-6 px-4 py-4 rounded-2xl bg-white/20 border border-white/30 shadow-lg flex flex-col items-center relative">
+        <h1
+          className="text-3xl md:text-4xl font-bold text-white mb-1 drop-shadow-lg text-center animate-fadeInUp"
+        >
+          Team Picker & Payment Tracker
+        </h1>
+        <p
+          className="text-lg md:text-xl font-semibold mt-0 mb-2 text-center drop-shadow-md animate-fadeInUp bg-gradient-to-r from-yellow-300 via-yellow-400 to-green-200 bg-clip-text text-transparent"
+          style={{ animationDelay: '0.2s' }}
+        >
+          The ONLY tool you need to manage your 5 a side games!
+        </p>
+      </header>
+      {/* Info Modal */}
+      {showInfo && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md flex flex-col items-center gap-4 relative">
+            <button
+              className="absolute top-2 right-2 text-green-900 hover:text-red-600 text-2xl font-bold focus:outline-none"
+              onClick={() => setShowInfo(false)}
+              aria-label="Close How to Use"
+              type="button"
+            >
+              ×
+            </button>
+            <h2 className="text-xl font-bold text-green-900 mb-2">How to use</h2>
+            <ul className="text-green-900 text-base list-disc list-inside space-y-2 text-left">
+              <li>Enter player names manually, or use <b>Paste from WhatsApp</b> to quickly add your group.</li>
+              <li>Mark who has paid using the checkboxes.</li>
+              <li>Click <b>Generate Teams</b> to split players randomly.</li>
+              <li>Edit team names or swap players between teams as needed.</li>
+              <li>Share teams via WhatsApp or copy to clipboard.</li>
+            </ul>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row gap-8 mb-8 w-full max-w-4xl justify-center">
         {/* Player Names */}
         <div className="flex flex-col items-center flex-1">
-          <label className="text-xl font-semibold text-white mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)]">Enter Player Names Below</label>
-          <div className="relative w-64">
-            <textarea
-              ref={textareaRef}
-              className="w-full rounded-xl bg-white/80 p-4 text-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-black placeholder:text-gray-500"
-              placeholder="Type one name per line..."
-              value={names}
-              onChange={handleNamesChange}
-              style={{ height: textareaHeight, minHeight: `${rowHeight * 10}px`, maxHeight: "500px" }}
-              rows={10}
-            />
-            {/* Shadow textarea for auto-sizing (hidden) */}
-            <textarea
-              ref={shadowRef}
-              className="absolute top-0 left-0 w-full p-4 text-lg opacity-0 pointer-events-none h-0 resize-none text-black"
-              tabIndex={-1}
-              aria-hidden
-              readOnly
-              rows={1}
-            />
+          <div className="w-full">
+            <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Enter Player Names</label>
+            <div className="rounded-2xl bg-white/90 p-4 shadow-xl border border-green-200 transition-all duration-200 hover:shadow-2xl focus-within:shadow-2xl">
+              <textarea
+                ref={textareaRef}
+                className="w-full rounded-xl bg-white/80 p-4 text-lg shadow focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-black placeholder:text-gray-500 min-h-[120px] md:min-h-[320px] max-h-[500px]"
+                placeholder="Type one name per line..."
+                value={names}
+                onChange={handleNamesChange}
+                style={{ height: textareaHeight, minHeight: '120px', maxHeight: '500px' }}
+                rows={4}
+              />
+              {/* Shadow textarea for auto-sizing (hidden) */}
+              <textarea
+                ref={shadowRef}
+                className="absolute top-0 left-0 w-full p-4 text-lg opacity-0 pointer-events-none h-0 resize-none text-black"
+                tabIndex={-1}
+                aria-hidden
+                readOnly
+                rows={1}
+              />
+            </div>
           </div>
           <div className="flex items-center w-full justify-center my-2">
             <span className="text-white text-sm font-bold px-2 py-1 bg-green-800 rounded-full shadow">OR</span>
@@ -303,39 +341,46 @@ export default function Home() {
             </div>
           )}
         </div>
-        {/* Payments */}
+        {/* Payments - side by side */}
         <div className="flex flex-col items-center flex-1">
-          <label className="text-xl font-semibold text-white mb-2 drop-shadow-[0_2px_2px_rgba(0,0,0,0.9)]">Payments</label>
-          <div
-            className="w-64 rounded-xl bg-white/80 p-4 shadow-lg flex flex-col gap-2 transition-all duration-200"
-            style={{ height: `${(payments.length + 2) * rowHeight}px`, minHeight: `${32 * 10}px` }}
-          >
-            {payments.length === 0 && (
-              <span className="text-gray-400 text-center mt-24">No players yet</span>
-            )}
-            {payments.map((name, idx) => (
-              <label key={name} className="flex items-center gap-2 text-lg cursor-pointer select-none">
-                <span className="w-6 text-right text-gray-500 font-mono">{idx + 1}.</span>
-                <input
-                  type="checkbox"
-                  checked={!!paid[name]}
-                  onChange={() => handlePaidToggle(name)}
-                  className="accent-green-600 w-5 h-5"
-                />
-                <span className={paid[name] ? "line-through text-gray-500" : "text-green-900 font-medium"}>{name}</span>
-              </label>
-            ))}
+          <div className="w-full">
+            <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Payments</label>
+            <div className="rounded-2xl bg-white/90 p-4 shadow-xl border border-green-200 transition-all duration-200 hover:shadow-2xl focus-within:shadow-2xl flex flex-col gap-2 min-h-[120px]">
+              {payments.length === 0 && (
+                <span className="text-gray-400 text-center mt-24">No players yet</span>
+              )}
+              {payments.map((name, idx) => (
+                <label key={name} className="flex items-center gap-2 text-lg cursor-pointer select-none hover:bg-green-50 rounded px-2 py-1 transition">
+                  <span className="w-6 text-right text-gray-500 font-mono">{idx + 1}.</span>
+                  <input
+                    type="checkbox"
+                    checked={!!paid[name]}
+                    onChange={() => handlePaidToggle(name)}
+                    className="accent-green-600 w-5 h-5"
+                  />
+                  <span className={paid[name] ? "line-through text-gray-500" : "text-green-900 font-medium"}>{name}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-      {/* Generate Teams Button */}
-      <button
-        className="bg-yellow-400 hover:bg-yellow-500 text-green-900 font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition mb-4 text-xl"
-        onClick={handleGenerateTeams}
-        disabled={payments.length < 2}
-      >
-        Generate Teams
-      </button>
+      {/* Generate Teams Button Area */}
+      <div className="flex flex-col items-center w-full my-6">
+        <span className="text-base md:text-lg text-white/90 font-medium mb-2 text-center">Click to randomly split players into two teams!</span>
+        <button
+          className={`flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-300 hover:from-yellow-500 hover:to-green-400 text-green-900 font-extrabold py-3 px-12 rounded-full shadow-2xl border-2 border-green-900 transition-all duration-200 text-2xl focus:outline-none focus:ring-4 focus:ring-green-300 active:scale-95 ${payments.length < 2 ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
+          onClick={handleGenerateTeams}
+          disabled={payments.length < 2}
+          aria-label="Generate random teams"
+          type="button"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7 mr-1">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4l16 16M4 20L20 4" />
+          </svg>
+          Generate Teams
+        </button>
+      </div>
       {/* Start Over Button */}
       <button
         className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-red-900 transition mb-8 text-lg"
