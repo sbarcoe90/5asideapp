@@ -248,7 +248,7 @@ export default function Home() {
           className="text-lg md:text-xl font-semibold mt-0 mb-2 text-center drop-shadow-md animate-fadeInUp bg-gradient-to-r from-yellow-300 via-yellow-400 to-green-200 bg-clip-text text-transparent"
           style={{ animationDelay: '0.2s' }}
         >
-          The ONLY tool you need to manage your 5 a side games!
+          The <span className="underline decoration-yellow-500 decoration-4 underline-offset-2">ONLY</span> tool YOU need to manage YOUR games!
         </p>
       </header>
       {/* Info Modal */}
@@ -344,7 +344,7 @@ export default function Home() {
         {/* Payments - side by side */}
         <div className="flex flex-col items-center flex-1">
           <div className="w-full">
-            <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Payments</label>
+            <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Payment Tracker</label>
             <div className="rounded-2xl bg-white/90 p-4 shadow-xl border border-green-200 transition-all duration-200 hover:shadow-2xl focus-within:shadow-2xl flex flex-col gap-2 min-h-[120px]">
               {payments.length === 0 && (
                 <span className="text-gray-400 text-center mt-24">No players yet</span>
@@ -390,61 +390,92 @@ export default function Home() {
       </button>
       {/* Teams Display */}
       {teams && (
-        <div className="w-full max-w-xl flex flex-col items-center gap-4 mb-4">
-          <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
-            <div className="flex-1 bg-white/90 rounded-xl p-4 shadow-lg border-2 border-green-700">
-              <input
-                className="text-xl font-bold text-green-800 mb-2 text-center w-full bg-transparent border-b-2 border-green-300 focus:outline-none focus:border-green-700 transition"
-                value={teamNames.bib}
-                onChange={e => handleTeamNameChange("bib", e.target.value)}
-                maxLength={32}
-              />
-              <ul className="text-lg text-green-900 font-medium list-disc list-inside">
-                {teams.bib.map((name) => (
-                  <li key={name} className="flex items-center justify-between gap-2 mb-2">
-                    <span>{name}</span>
-                    <button
-                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-lg font-bold border border-green-700"
-                      onClick={() => handleSwapPlayer(name, 'bib')}
-                      title="Move to other team"
-                    >
-                      ⇄
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex-1 bg-white/90 rounded-xl p-4 shadow-lg border-2 border-green-900">
-              <input
-                className="text-xl font-bold text-green-800 mb-2 text-center w-full bg-transparent border-b-2 border-green-300 focus:outline-none focus:border-green-900 transition"
-                value={teamNames.nobib}
-                onChange={e => handleTeamNameChange("nobib", e.target.value)}
-                maxLength={32}
-              />
-              <ul className="text-lg text-green-900 font-medium list-disc list-inside">
-                {teams.nobib.map((name) => (
-                  <li key={name} className="flex items-center justify-between gap-2 mb-2">
-                    <span>{name}</span>
-                    <button
-                      className="ml-2 px-2 py-1 bg-green-200 hover:bg-green-300 text-green-900 rounded transition text-lg font-bold border border-green-900"
-                      onClick={() => handleSwapPlayer(name, 'nobib')}
-                      title="Move to other team"
-                    >
-                      ⇄
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        <div className="w-full max-w-xl flex flex-col md:flex-row items-stretch gap-6 mb-4">
+          {/* Bib Team Card */}
+          <div className="flex-1 bg-white/90 rounded-2xl p-4 shadow-2xl border-2 border-green-700 relative flex flex-col">
+            <div className="absolute top-0 left-0 w-full h-2 rounded-t-2xl bg-green-400" />
+            <input
+              className="text-xl font-extrabold text-green-800 mb-3 text-center w-full bg-transparent border-b-2 border-green-300 focus:outline-none focus:border-green-700 transition py-1"
+              value={teamNames.bib}
+              onChange={e => handleTeamNameChange("bib", e.target.value)}
+              maxLength={32}
+              aria-label="Edit Bib team name"
+            />
+            <ul className="text-lg text-green-900 font-medium list-none flex flex-col gap-2 mt-2">
+              {teams.bib.map((name) => (
+                <li key={name} className="flex items-center justify-between gap-2 group transition-all">
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block w-3 h-3 rounded-full bg-green-400" aria-hidden="true"></span>
+                    {name}
+                  </span>
+                  <button
+                    className="ml-2 p-2 bg-green-100 hover:bg-green-300 text-green-900 rounded-full transition text-lg font-bold border border-green-700 focus:outline-none focus:ring-2 focus:ring-green-400"
+                    onClick={() => handleSwapPlayer(name, 'bib')}
+                    title="Move to other team"
+                    aria-label={`Move ${name} to No Bib team`}
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
-          <button
-            className={`mt-2 bg-green-700 hover:bg-green-800 text-white font-bold py-2 px-8 rounded-full shadow-lg border border-green-900 transition text-lg ${copied ? "opacity-70" : ""}`}
-            onClick={handleCopyAndShare}
-          >
-            {copied ? "Copied!" : "Share via WhatsApp"}
-          </button>
+          {/* No Bib Team Card */}
+          <div className="flex-1 bg-white/90 rounded-2xl p-4 shadow-2xl border-2 border-blue-700 relative flex flex-col">
+            <div className="absolute top-0 left-0 w-full h-2 rounded-t-2xl bg-blue-400" />
+            <input
+              className="text-xl font-extrabold text-blue-800 mb-3 text-center w-full bg-transparent border-b-2 border-blue-300 focus:outline-none focus:border-blue-700 transition py-1"
+              value={teamNames.nobib}
+              onChange={e => handleTeamNameChange("nobib", e.target.value)}
+              maxLength={32}
+              aria-label="Edit No Bib team name"
+            />
+            <ul className="text-lg text-blue-900 font-medium list-none flex flex-col gap-2 mt-2">
+              {teams.nobib.map((name) => (
+                <li key={name} className="flex items-center justify-between gap-2 group transition-all">
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block w-3 h-3 rounded-full bg-blue-400" aria-hidden="true"></span>
+                    {name}
+                  </span>
+                  <button
+                    className="ml-2 p-2 bg-blue-100 hover:bg-blue-300 text-blue-900 rounded-full transition text-lg font-bold border border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    onClick={() => handleSwapPlayer(name, 'nobib')}
+                    title="Move to other team"
+                    aria-label={`Move ${name} to Bib team`}
+                    type="button"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                    </svg>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
+      <button
+        className={`mt-2 flex items-center justify-center gap-2 w-full max-w-xs mx-auto py-3 px-8 rounded-full text-lg font-extrabold shadow-2xl border-2 border-green-900 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-green-300 active:scale-95
+          ${copied ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-green-500 via-green-400 to-green-600 hover:from-green-600 hover:to-green-400 text-white hover:scale-105'}
+          `}
+        onClick={handleCopyAndShare}
+        aria-label="Share teams via WhatsApp"
+        title="Share your teams instantly on WhatsApp!"
+        type="button"
+      >
+        <img src="/whatsapp.svg" alt="WhatsApp logo" className="w-7 h-7 mr-1" />
+        {copied ? (
+          <span className="flex items-center gap-1">
+            <svg className="w-6 h-6 text-white animate-bounce" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+            Copied!
+          </span>
+        ) : (
+          'Share via WhatsApp'
+        )}
+      </button>
       <footer className="mt-auto text-center text-white/80 text-sm pt-10 flex flex-col items-center gap-2">
         <span>⚽ 5-a-side Team Picker & Payment Tracker</span>
         <a
