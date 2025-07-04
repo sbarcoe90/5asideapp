@@ -218,9 +218,6 @@ export default function Home() {
     setTeamNames((prev) => ({ ...prev, [key]: value }));
   };
 
-  // Calculate dynamic height for payments box (match textarea rows, min 10 rows)
-  const rowHeight = 32; // px, approx for text-lg + padding
-
   // Swap player between teams
   const handleSwapPlayer = (player: string, from: 'bib' | 'nobib') => {
     if (!teams) return;
