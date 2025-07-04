@@ -278,12 +278,12 @@ export default function Home() {
         {/* Player Names */}
         <div className="flex flex-col items-center flex-1">
           <div className="w-full">
-            <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Enter Player Names</label>
+            <label className="text-xl font-bold text-white mb-3 block text-center tracking-wide">Enter Player Names</label>
             <div className="rounded-2xl bg-white/90 p-4 shadow-xl border border-green-200 transition-all duration-200 hover:shadow-2xl focus-within:shadow-2xl">
               <textarea
                 ref={textareaRef}
                 className="w-full rounded-xl bg-white/80 p-4 text-lg shadow focus:outline-none focus:ring-2 focus:ring-green-400 resize-none text-black placeholder:text-gray-500 min-h-[120px] md:min-h-[320px] max-h-[500px]"
-                placeholder="Type one name per line..."
+                placeholder="Type one name per line... and then hit 'Generate Teams'!"
                 value={names}
                 onChange={handleNamesChange}
                 style={{ height: textareaHeight, minHeight: '120px', maxHeight: '500px' }}
@@ -344,7 +344,7 @@ export default function Home() {
         {/* Payments - side by side */}
         <div className="flex flex-col items-center flex-1">
           <div className="w-full">
-            <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Payment Tracker</label>
+            <label className="text-xl font-bold text-white mb-3 block text-center tracking-wide">Payment Tracker</label>
             <div className="rounded-2xl bg-white/90 p-4 shadow-xl border border-green-200 transition-all duration-200 hover:shadow-2xl focus-within:shadow-2xl flex flex-col gap-2 min-h-[120px]">
               {payments.length === 0 && (
                 <span className="text-gray-400 text-center mt-24">No players yet</span>
@@ -367,7 +367,7 @@ export default function Home() {
       </div>
       {/* Generate Teams Button Area */}
       <div className="flex flex-col items-center w-full my-6">
-        <span className="text-base md:text-lg text-white/90 font-medium mb-2 text-center">Click to randomly split players into two teams!</span>
+        {/* <span className="text-base md:text-lg text-black font-medium mb-2 text-center">Click to randomly split players into two teams!</span> */}
         <button
           className={`flex items-center justify-center gap-2 bg-gradient-to-r from-yellow-400 via-yellow-300 to-green-300 hover:from-yellow-500 hover:to-green-400 text-green-900 font-extrabold py-3 px-12 rounded-full shadow-2xl border-2 border-green-900 transition-all duration-200 text-2xl focus:outline-none focus:ring-4 focus:ring-green-300 active:scale-95 ${payments.length < 2 ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
           onClick={handleGenerateTeams}
@@ -375,9 +375,7 @@ export default function Home() {
           aria-label="Generate random teams"
           type="button"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-7 h-7 mr-1">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4l16 16M4 20L20 4" />
-          </svg>
+          <img src="/shuffle.svg" alt="Shuffle icon" className="w-7 h-7 mr-1" />
           Generate Teams
         </button>
       </div>
@@ -473,7 +471,7 @@ export default function Home() {
             Copied!
           </span>
         ) : (
-          'Share via WhatsApp'
+          'Share to WhatsApp'
         )}
       </button>
       <footer className="mt-auto text-center text-white/80 text-sm pt-10 flex flex-col items-center gap-2">
