@@ -276,7 +276,6 @@ export default function Home() {
         {/* Player Names */}
         <PlayerInput
           names={names}
-          setNames={setNames}
           textareaRef={textareaRef}
           shadowRef={shadowRef}
           textareaHeight={textareaHeight}
