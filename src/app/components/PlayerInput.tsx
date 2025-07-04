@@ -30,7 +30,7 @@ const PlayerInput: React.FC<PlayerInputProps> = ({
   return (
     <div className="flex flex-col items-center flex-1">
       <div className="w-full">
-        <label className="text-xl font-bold text-green-900 mb-3 block text-center tracking-wide">Enter Player Names</label>
+        <label className="text-xl font-bold text-white mb-3 block text-center tracking-wide">Enter Player Names</label>
         <div className="rounded-2xl bg-white/90 p-4 shadow-xl border border-green-200 transition-all duration-200 hover:shadow-2xl focus-within:shadow-2xl">
           <textarea
             ref={textareaRef}
