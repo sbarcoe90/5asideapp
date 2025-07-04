@@ -2,7 +2,6 @@ import React from "react";
 
 interface PlayerInputProps {
   names: string;
-  setNames: (names: string) => void;
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
   shadowRef: React.RefObject<HTMLTextAreaElement | null>;
   textareaHeight: string;
@@ -17,7 +16,6 @@ interface PlayerInputProps {
 
 const PlayerInput: React.FC<PlayerInputProps> = ({
   names,
-  setNames,
   textareaRef,
   shadowRef,
   textareaHeight,
